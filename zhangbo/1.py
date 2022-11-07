@@ -1,3 +1,14 @@
+num_epoch=1
+batch_size=100
+class A():
+        pass
+args=A()
+args.learning_rate=3e-4
+args.adam_epsilon=1e-8
+args.weight_decay=0
+
+
+
 from transformers import ViTFeatureExtractor, ViTForImageClassification,ViTModel
 from PIL import Image
 import requests
@@ -32,7 +43,7 @@ values=list(model.state_dict(keep_vars=True).values())
 
 #还是锁上好!!!!!!!因为特征层已经很好了.再动会更坑.
 if 1:
-    for i in values[:-3]: #只开放最后2层.
+    for i in values[:-4]: #只开放最后2层.
         i.requires_grad=False
 
 
@@ -102,7 +113,7 @@ test_set = datasets.ImageFolder('smalldata_猫狗分类/test', transform=transfo
 
 
 
-batch_size=100
+
 import torch
 train_loader = torch.utils.data.DataLoader(
             train_set,
@@ -112,16 +123,12 @@ test_loader = torch.utils.data.DataLoader(
             batch_size=batch_size)
 
 
-num_epoch=100
 
+device='cuda'
+model.to(device)
 if 1:
     print('start_train')
-    class A():
-        pass
-    args=A()
-    args.learning_rate=3e-5
-    args.adam_epsilon=1e-8
-    args.weight_decay=0
+
     no_decay = ["bias", "LayerNorm.weight"]
     optimizer_grouped_parameters = [
         {
@@ -135,7 +142,7 @@ if 1:
     model.zero_grad()
     model.train()
 
-    device='cpu'
+   
     for _ in range(num_epoch):
         print('第 '+str(_+1)+' 伦')
         for batch_idx, (data, target) in enumerate(train_loader):
@@ -156,12 +163,13 @@ if 1:
 #---------下面开始测试
 model.eval()
 inputs = feature_extractor(images=image, return_tensors="pt")
-outputs = model(**inputs)
+outputs = model(pixel_values=inputs['pixel_values'].to(device))
 print(outputs.logits.argmax(-1).item())
 
 
 
-
+torch.save(model,'tmp.pth') 
+model=torch.load('tmp.pth') 
 
 
 
