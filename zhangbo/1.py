@@ -1,5 +1,5 @@
-num_epoch=1
-batch_size=100
+num_epoch=100
+batch_size=200
 class A():
         pass
 args=A()
@@ -93,8 +93,8 @@ transform=transforms.Compose([
 
             transforms.RandomVerticalFlip(p=0.5),
             transforms.RandomRotation(90),
-            transforms.RandomResizedCrop(224,scale=(0.5, 1.0)),  # scael表示面积抽取原来的0.3
-           AddGaussianNoise(mean=0, variance=1, amplitude=20),
+            transforms.RandomResizedCrop(224,scale=(0.6, 1.0)),  # scael表示面积抽取原来的0.3
+           AddGaussianNoise(mean=0, variance=1, amplitude=1),
             transforms.ToTensor(), # convert a PIL image or ndarray to tensor. 
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) #输入均值方差.
                ])
